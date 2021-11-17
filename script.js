@@ -64,9 +64,17 @@ const DisplayController = (function(){
     changeState}
 })();
 const handleGame = (function(){
+    //Two different game options, 2 players, 1 player vs ai
+    //1 player, ideally could set up a random "x player goes first"
+    let onPlayerOne = true;
     const playerInput = (num) => {
-        belf.setSquare(num);
-        getComputerInput()
+        if(onPlayerOne){
+        playerOne.setSquare(num);
+        onPlayerOne=false;
+        }else{
+        playerTwo.setSquare(num);
+        onPlayerOne=true;
+        }
     }
     //Set up as AI later? Build just a two player input
     //const getComputerInput = () => {
@@ -92,5 +100,5 @@ const PlayerFactory = (name, mark, color) => {
         setSquare
     }
 }
-const belf = PlayerFactory('player', 'x', 'green');
-const computer = PlayerFactory('computer', 'o', 'red');
+const playerOne = PlayerFactory('player one', 'x', 'green');
+const playerTwo = PlayerFactory('computer two', 'o', 'pink');
