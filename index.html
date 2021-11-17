@@ -9,7 +9,30 @@
 </head>
 <script src='script.js' defer></script>
 <body>
-    <div id=gameboard></div>
-    
+    <h1>Tic-Tac-Toe</h1>
+    <div id=player>
+        <div id=gameboard></div>
+        <div id=bottom-row>
+            <form id=p1>
+                <div>Player One (X)</div>
+                <label for="player-one">Name:</label>
+                <input type="text" id=player-one name=player-one autocomplete=off placeholder="Player One">
+                <input id=name-one-submit type='submit' value="Submit">
+                <div id=playerOne-wins>Wins: 0</div>
+            </form>
+            <div id=buttons>
+                <button id='new-round'>New Round</button>
+                <button>Change Game Type</button>
+            </div>
+            <form id=p2>
+                <div>Player Two (O)</div>
+                <label for="player-two">Name:</label>
+                <input type="text" id=player-two name=player-two autocomplete=off placeholder="Player Two">
+                <input id=name-two-submit type='button' value="Submit">
+                <div id=playerTwo-wins>Wins: 0</div>
+            </form>
+            
+        </div>    
+    </div>
 </body>
 </html>

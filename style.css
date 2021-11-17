@@ -1,21 +1,72 @@
+/* color palette:
+    slight green #C5D1B2
+    beige #E8DCC8
+    blue #4B7BA6
+    lightblue #70A1BD
+    offwhite: #F2F2F2
+*/
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F2F2F2;
+}
+#player{
+    display: flex;
+    flex-direction: column;
+    width: 650px;
+    height: 650px;
+    background-color: #70A1BD;
+    align-items: center;
+    justify-content: center;
+    border: solid;
+    border-color: #4B7BA6;
+    border-width: 16px;
+}
+#bottom-row{
+    display: flex;
+    justify-content: space-around;
+    align-self: stretch;
+    margin-top: 16px;
+}
+#buttons{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+}
 #gameboard{
     display: flex;
-    width: 350px;
+    width: 470px;
+    background-color: black;
     flex-wrap: wrap;
+    justify-content: space-between;
+    align-items:center;
+    gap: 10px;
+    border: solid;
+    border-color: #4B7BA6;
+    border-width: 16px;
 }
 .board-square{
-    background-color:blue;
-    width: 100px;
-    height: 100px;
-    margin: 4px;
+    background-color:white;
+    width: 150px;
+    height: 150px;
+    font-size: 100px;
+    text-align: center;
+}
+.button-highlight{
+    box-shadow: 0 0 1rem yellow;
 }
 .clicked-player{
     background-color: white;
 }
 div.error-click{
-    border-style: solid;
-    border-color: red;
-    width: 90px;
-    height: 90px;
-    border-width: 5px;
+    box-shadow: 0 0 1rem red;
+}
+input{
+    width: 80px;
 }
