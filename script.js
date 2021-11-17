@@ -13,17 +13,13 @@ const Gameboard = (function (){
         positions.push('');
     }
     const changeState = (value, position) => {
-        console.log('here');
-        if(value == 'x' || value == 'y')
+        if(value == playerOne.mark || value == playerTwo.mark)
             positions[position]=value
         }
     const numEmptyPositions = () => {
         let num=0
-        //console.log('eher')
         positions.forEach(function(position){
-            //console.log('ekekee')
             if(position==""){
-                //console.log(num);
                 num++
             }
         }) 
@@ -41,40 +37,69 @@ const Gameboard = (function (){
 
 const DisplayController = (function(){
     const displayBoard = document.querySelector('#gameboard');
+    const squares = displayBoard.childNodes;
     for(let i=0; i<9; i++){
         let boardSquare = document.createElement('div')
         boardSquare.classList.add('board-square');
         boardSquare.setAttribute('number', `${i}`)
         displayBoard.appendChild(boardSquare);
-        //playerRound toggle
         boardSquare.addEventListener('click', function(){
-           // console.log(handleGame.onPlayerInput)
             boardSquare.classList.add(`clicked-player`);
             handleGame.playerInput(i)
-        
-            //self.setSquare(i) move to a player input function?
         })        
     }
     const changeState = (mark, num, color) => {
-        let square = displayBoard.childNodes[num];
+        let square = squares[num];
         square.style.backgroundColor = color;
         square.textContent=mark;
     }
-    return{displayBoard,
-    changeState}
+    const displaySelectionError = (num) => {
+        let square = squares[num];
+        square.classList.add('error-click');
+        setTimeout(function(){
+            square.classList.remove('error-click')
+        }, 200);
+    }
+    return{
+        displayBoard,
+        changeState,
+        displaySelectionError
+    }
 })();
 const handleGame = (function(){
-    //Two different game options, 2 players, 1 player vs ai
-    //1 player, ideally could set up a random "x player goes first"
     let onPlayerOne = true;
     const playerInput = (num) => {
-        if(onPlayerOne){
-        playerOne.setSquare(num);
-        onPlayerOne=false;
+        if(!Gameboard.positions[num]){
+            if(onPlayerOne){
+            playerOne.setSquare(num);
+            onPlayerOne=false;
+            checkWin(playerOne);
+            }else{
+            playerTwo.setSquare(num);
+            onPlayerOne=true;
+            checkWin(playerTwo)
+            }
         }else{
-        playerTwo.setSquare(num);
-        onPlayerOne=true;
-        }
+            DisplayController.displaySelectionError(num);
+        }    
+    }
+    const winningPositions = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
+    const checkWin = (player) => {
+        const positionsHeld = [];
+        Gameboard.positions.forEach((position, index) => {
+            if(position == player.mark){
+                positionsHeld.push(index);
+            }
+        })
+        winningPositions.forEach((combination) => {
+            if(positionsHeld.includes(combination[0])){
+                if(positionsHeld.includes(combination[1])){
+                    if(positionsHeld.includes(combination[2])){
+                        console.log(`Congratulations ${player.name} on the win`)
+                    }
+                }
+            }
+        })
     }
     //Set up as AI later? Build just a two player input
     //const getComputerInput = () => {
@@ -88,7 +113,7 @@ const handleGame = (function(){
         playerInput
     }
 })();
-//
+
 const PlayerFactory = (name, mark, color) => {
     const winGame = () => console.log(`The ${name} won the game`);
     const setSquare = (num) => {
@@ -96,9 +121,11 @@ const PlayerFactory = (name, mark, color) => {
         DisplayController.changeState(mark, num, color);
     }
     return {
+        name,
         winGame,
-        setSquare
+        setSquare,
+        mark
     }
 }
 const playerOne = PlayerFactory('player one', 'x', 'green');
-const playerTwo = PlayerFactory('computer two', 'o', 'pink');
+const playerTwo = PlayerFactory('player two', 'o', 'pink');

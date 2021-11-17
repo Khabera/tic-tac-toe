@@ -10,5 +10,12 @@
     margin: 4px;
 }
 .clicked-player{
-    background-color: red;
+    background-color: white;
+}
+div.error-click{
+    border-style: solid;
+    border-color: red;
+    width: 90px;
+    height: 90px;
+    border-width: 5px;
 }
