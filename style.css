@@ -1,0 +1,14 @@
+#gameboard{
+    display: flex;
+    width: 350px;
+    flex-wrap: wrap;
+}
+.board-square{
+    background-color:blue;
+    width: 100px;
+    height: 100px;
+    margin: 4px;
+}
+.clicked-player{
+    background-color: red;
+}
