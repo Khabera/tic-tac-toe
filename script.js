@@ -1,9 +1,8 @@
-//tic tac toe game
-
-//gameboard -- 9 squares
-//displayController -- Connect to DOM, recieve input?
-
-//I want to get a good understand of the pseudo code before I start this thing, what can I do, and what am I trying to do? Modules allow me to create 
+//what functionality do I want to add?
+//Player Selection
+//Mark Selection
+//Clear Game
+//Game Type
 
 const Gameboard = (function (){
     let positions = new Array();
@@ -13,9 +12,10 @@ const Gameboard = (function (){
         positions.push('');
     }
     const changeState = (value, position) => {
-        if(value == playerOne.mark || value == playerTwo.mark)
+        if(value == playerOne.mark || value == playerTwo.mark){
             positions[position]=value
         }
+    }
     const numEmptyPositions = () => {
         let num=0
         positions.forEach(function(position){
@@ -25,16 +25,27 @@ const Gameboard = (function (){
         }) 
         return num;
     }
+    const clearGameboard = () => {
+        positions.forEach(function(position, index){
+            positions[index]="";
+            DisplayController.changeState('', index, 'white')
+            if(DisplayController.highlightOn){
+                DisplayController.toggleNewRoundHighlight();
+            }
+        })
+    }
     return {
         changeState,
         get positions(){
             return positions;
         },
+        clearGameboard,
         addRound,
         numEmptyPositions
     }
 })();
 
+//add name highlights if they are not entered
 const DisplayController = (function(){
     const displayBoard = document.querySelector('#gameboard');
     const squares = displayBoard.childNodes;
@@ -45,12 +56,12 @@ const DisplayController = (function(){
         displayBoard.appendChild(boardSquare);
         boardSquare.addEventListener('click', function(){
             boardSquare.classList.add(`clicked-player`);
-            handleGame.playerInput(i)
+            gameHandler.playerInput(i)
         })        
     }
     const changeState = (mark, num, color) => {
         let square = squares[num];
-        square.style.backgroundColor = color;
+        square.style.color = color;
         square.textContent=mark;
     }
     const displaySelectionError = (num) => {
@@ -60,16 +71,53 @@ const DisplayController = (function(){
             square.classList.remove('error-click')
         }, 200);
     }
+    let highlightOn = false
+    const toggleNewRoundHighlight = () => {
+        button = document.querySelector('#new-round');
+        if(!highlightOn){
+            button.classList.add('button-highlight');
+            return (highlightOn = !highlightOn);
+        }else{
+            button.classList.remove('button-highlight');
+            return (highlightOn = !highlightOn);
+        }
+    }
+    //definitely would be able to clean this the fuck up
+    let forms = document.querySelectorAll('form')
+        forms.forEach((form) => {
+            form[1].addEventListener('click', () => {
+                if(form.getAttribute('id')=='p1'){
+                    playerOne.setName(form[0].value);
+                }else{
+                    playerTwo.setName(form[0].value);
+                }
+                form.childNodes[3].textContent = form[0].value;
+                form[1].remove();
+                form[0].remove();
+            })
+    })
+    const updateWins = (player) => {
+        let entryArea = document.querySelector(`#${player.id}-wins`)
+        entryArea.textContent = `Wins: ${player.wins}`;
+    }
     return{
+        get highlightOn(){
+            return highlightOn;
+        },
         displayBoard,
         changeState,
-        displaySelectionError
+        updateWins,
+        displaySelectionError,
+        toggleNewRoundHighlight
     }
 })();
-const handleGame = (function(){
+
+const gameHandler = (function(){
+    let gameActive = true;
     let onPlayerOne = true;
+
     const playerInput = (num) => {
-        if(!Gameboard.positions[num]){
+        if(Gameboard.positions[num]=="" && gameActive){
             if(onPlayerOne){
             playerOne.setSquare(num);
             onPlayerOne=false;
@@ -79,6 +127,7 @@ const handleGame = (function(){
             onPlayerOne=true;
             checkWin(playerTwo)
             }
+            checkStalemate();
         }else{
             DisplayController.displaySelectionError(num);
         }    
@@ -95,12 +144,30 @@ const handleGame = (function(){
             if(positionsHeld.includes(combination[0])){
                 if(positionsHeld.includes(combination[1])){
                     if(positionsHeld.includes(combination[2])){
-                        console.log(`Congratulations ${player.name} on the win`)
+                        gameWon(player);
                     }
                 }
             }
         })
     }
+    function checkStalemate(){
+        if(!Gameboard.positions.includes('')){
+            DisplayController.toggleNewRoundHighlight();
+        }
+    }
+    const gameWon = (player) => {
+        console.log(`congrats ${player.name} on the win`)
+        player.addWin();
+        DisplayController.toggleNewRoundHighlight();
+        gameActive = false;
+        DisplayController.updateWins(player);
+    }
+    const clearButton = document.querySelector('#new-round')
+    clearButton.addEventListener('click', () => {
+        Gameboard.clearGameboard();
+        gameActive=true;
+    });
+
     //Set up as AI later? Build just a two player input
     //const getComputerInput = () => {
     //    let num = Math.floor(Math.random() * Gameboard.numEmptyPositions());
@@ -120,12 +187,27 @@ const PlayerFactory = (name, mark, color) => {
         Gameboard.changeState(mark, num);
         DisplayController.changeState(mark, num, color);
     }
+    const setName = (recieved) => {
+        return (name = recieved);
+    }
+    let wins = 0
+    const addWin = () => {
+        return (++wins);
+    } 
     return {
-        name,
+        get name(){
+            return name;
+        },
+        get wins(){
+            return wins;
+        },
+        addWin,
+        setName,
         winGame,
         setSquare,
-        mark
+        mark,
+        id: name
     }
 }
-const playerOne = PlayerFactory('player one', 'x', 'green');
-const playerTwo = PlayerFactory('player two', 'o', 'pink');
+const playerOne = PlayerFactory('playerOne', 'x', 'green');
+const playerTwo = PlayerFactory('playerTwo', 'o', 'pink');
